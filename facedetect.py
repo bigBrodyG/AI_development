@@ -1,3 +1,8 @@
+'''
+Autore: Giordano Fornari (3BAU)
+Versione: 1.1
+'''
+
 import face_recognition
 import cv2
 import numpy as np
@@ -9,72 +14,70 @@ import numpy as np
 # Dichiara la tua webcam (n. 0 pk quella predefinita)
 video_capture = cv2.VideoCapture(0)
 # Carica una immagine e crea l'encoding di essa
-obama_image = face_recognition.load_image_file("obama.jpg")
-obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+my_image = face_recognition.load_image_file("am-i.jpg")
+pala_encoding = face_recognition.face_encodings(my_image)[0]
 
 # Carica una immagine e crea l'encoding di essa
-biden_image = face_recognition.load_image_file("biden.jpg")
-biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
+my_image = face_recognition.load_image_file("paladini.jpg")
+pala_encoding = face_recognition.face_encodings(pala_image)[0]
 
 # Crea un array per gli encoding delle immagini
-known_face_encodings = [
-    obama_face_encoding,
-    biden_face_encoding
+known_encodings = [
+    my_encoding,
+    pala_encoding
 ]
 
 
 # Crea un array per gli encoding delle immagini
-known_face_names = [
-    "Barack Obama",
-    "Joe Biden"
+known_names = [
+    "Giordano Fornari",
+    "Massimiliano Paladini"
 ]
 
 while True:
-    # Prendi un frame del video (ret??)
+    # Prendi un frame del video --> ret è una variabile booleana di ritorno; in frame invece sono salvati gli array delle immagini;
     ret, frame = video_capture.read()
 
     # Convertiamo l'immagine dal colore BGR (utilizzato da OpenCV) al colore RGB (utilizzato da face_recognition)
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     #Ottieni le coordinate delle facce 
-    face_locations = face_recognition.face_locations(rgb_frame)
+    coord = face_recognition.face_locations(rgb_frame)
     #poi crea gli encoding delle facce alle cordinate
-    face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
+    encodings = face_recognition.face_encodings(rgb_frame, coord)
 
-    # Loop through each face in this frame of video
-    for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
-        # See if the face is a match for the known face(s)
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+    # Controlla ogni faccia presente nella videocamera
+    for (alto, destra, basso, sinistra), encoding in zip(coord, encodings):
+        # Controlla se c'è un riconoscimento di una faccia
+        matches = face_recognition.compare_faces(known_encodings, encoding)
 
-        name = "Unknown"
+        nome = "Unknown"
 
         # If a match was found in known_face_encodings, just use the first one.
         if True in matches:
+            #prendi il primo volto conosciuto e scrivi l'indice corrispondente nella variabile
             first_match_index = matches.index(True)
-            name = known_face_names[first_match_index]
+            #assegna il nome corrispondente
+            nome = known_face_names[first_match_index]
 
-        # Or instead, use the known face with the smallest distance to the new face
-      '''
-        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-        best_match_index = np.argmin(face_distances)
-        if matches[best_match_index]:
-            name = known_face_names[best_match_index]
-      '''
-        # Draw a box around the face
+        # Disegna un rettangolo attorno all immagine
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
-        # Draw a label with a name below the face
+        # Disegna il nome
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+        # Scelgo il font
         font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        # Con +-6 aggiungo un minimo di spaziatura che sara: 6-2 = 4px
+        cv2.putText(frame, nome, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     # Display the resulting image
     cv2.imshow('Video', frame)
 
-    # Hit 'q' on the keyboard to quit!
+    # Comando per chiudere premendo 'q'
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release handle to the webcam
+# Chiudi accesso a webcam
 video_capture.release()
+# Cancella tutte le finestre
 cv2.destroyAllWindows()
