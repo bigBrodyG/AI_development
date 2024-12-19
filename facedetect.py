@@ -18,7 +18,7 @@ my_image = face_recognition.load_image_file("am-i.jpg")
 pala_encoding = face_recognition.face_encodings(my_image)[0]
 
 # Carica una immagine e crea l'encoding di essa
-my_image = face_recognition.load_image_file("paladini.jpg")
+pala_image = face_recognition.load_image_file("paladini.jpg")
 pala_encoding = face_recognition.face_encodings(pala_image)[0]
 
 # Crea un array per gli encoding delle immagini
