@@ -15,7 +15,7 @@ import numpy as np
 video_capture = cv2.VideoCapture(0)
 # Carica una immagine e crea l'encoding di essa
 my_image = face_recognition.load_image_file("am-i.jpg")
-pala_encoding = face_recognition.face_encodings(my_image)[0]
+my_encoding = face_recognition.face_encodings(my_image)[0]
 
 # Carica una immagine e crea l'encoding di essa
 pala_image = face_recognition.load_image_file("paladini.jpg")
